@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice</title>
+    <style>
+        html,
+        body {
+            font-family: 'Verdana', 'Arial', sans-serif;
+            font-size: 16px;
+            height: 100%;
+            margin: 0;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        td {
+            width: 25%;
+        }
+
+        .highlight {
+            animation: highlighter 0.3s 4;
+        }
+
+        @keyframes highlighter {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div
+        style="display: grid; grid-auto-rows: max-content; height: 100%;align-content: center;align-items: center; grid-template-columns: 50% 50%">
+        <div style="grid-column: 1; font-size: 40vmin; text-align: center;" id="roll-dice">-</div>
+        <div style="grid-column: 2; font-size: 5vmin;" id="dice-counter">
+            2:
+        </div>
+
+    </div>
+</body>
+
+<script>
+    const arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const arrHistory = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    function ready(fn) {
+        if (document.readyState !== 'loading') {
+            fn();
+        } else {
+            document.addEventListener('DOMContentLoaded', fn);
+        }
+    }
+
+
+
+    ready(() => {
+        const diceCounter = document.getElementById("dice-counter");
+        const rollDice = document.getElementById("roll-dice");
+
+        function updateRolls(latestRoll) {
+            let diceCounterHtml = "";
+            const totalRolls = arr.reduce((a, b) => a + b, 0);
+            console.log(totalRolls);
+            for (let i = 0; i < arr.length; i++) {
+                diceCounterHtml += `
+                    <tr ${i === (latestRoll - 2) ? "class='highlight'" : ""}>
+                        <td>${i + 2}</td>
+                        <td>${arr[i]}</td>
+                        <td>${arrHistory[i]}</td>
+                        <td style="background: linear-gradient(to right, black ${100 * (arr[i] / totalRolls)}%, white 1%);">&nbsp;</td>
+                    </tr>`;
+            }
+
+            diceCounter.innerHTML = `<table>${diceCounterHtml}</table>`;
+        }
+
+
+
+        document.getElementById("roll-dice").addEventListener("click", () => {
+            const roll1 = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+            const roll2 = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+
+            const roll = roll1 + roll2;
+
+            rollDice.innerHTML = ""
+
+            setTimeout(() => {
+                arr[roll - 2]++;
+
+                for (let i = 0; i < arrHistory.length; i++) arrHistory[i]++;
+                arrHistory[roll - 2] = 0;
+
+                rollDice.innerHTML = roll;
+
+                updateRolls(roll);
+            }
+                , 300)
+
+
+
+
+        })
+
+        updateRolls();
+
+
+
+
+
+    })
+</script>
+
+</html>
